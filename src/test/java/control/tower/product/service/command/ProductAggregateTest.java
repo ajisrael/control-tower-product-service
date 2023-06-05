@@ -6,12 +6,15 @@ import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProductAggregateTest {
 
-    private String PRODUCT_ID = "1234";
-    private String NAME = "Name";
+    private final String PRODUCT_ID = "1234";
+    private final String NAME = "Name";
+    private final BigDecimal PRICE = BigDecimal.valueOf(10.00);
 
     private FixtureConfiguration<ProductAggregate> fixture;
 
@@ -27,16 +30,19 @@ public class ProductAggregateTest {
                         CreateProductCommand.builder()
                                 .productId(PRODUCT_ID)
                                 .name(NAME)
+                                .price(PRICE)
                                 .build())
                 .expectEvents(
                         ProductCreatedEvent.builder()
                                 .productId(PRODUCT_ID)
                                 .name(NAME)
+                                .price(PRICE)
                                 .build())
                 .expectState(
                         productAggregate -> {
                             assertEquals(PRODUCT_ID, productAggregate.getProductId());
                             assertEquals(NAME, productAggregate.getName());
+                            assertEquals(PRICE, productAggregate.getPrice());
                         }
                 );
     }
@@ -48,6 +54,7 @@ public class ProductAggregateTest {
                         CreateProductCommand.builder()
                                 .productId(null)
                                 .name(NAME)
+                                .price(PRICE)
                                 .build())
                 .expectException(IllegalArgumentException.class);
     }
@@ -59,6 +66,7 @@ public class ProductAggregateTest {
                         CreateProductCommand.builder()
                                 .productId("")
                                 .name(NAME)
+                                .price(PRICE)
                                 .build())
                 .expectException(IllegalArgumentException.class);
     }
@@ -70,6 +78,7 @@ public class ProductAggregateTest {
                         CreateProductCommand.builder()
                                 .productId(PRODUCT_ID)
                                 .name(null)
+                                .price(PRICE)
                                 .build())
                 .expectException(IllegalArgumentException.class);
     }
@@ -81,6 +90,19 @@ public class ProductAggregateTest {
                         CreateProductCommand.builder()
                                 .productId(PRODUCT_ID)
                                 .name("")
+                                .price(PRICE)
+                                .build())
+                .expectException(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldNotCreateProductAggregateWhenPriceIsNull() {
+        fixture.givenNoPriorActivity()
+                .when(
+                        CreateProductCommand.builder()
+                                .productId(PRODUCT_ID)
+                                .name(NAME)
+                                .price(null)
                                 .build())
                 .expectException(IllegalArgumentException.class);
     }
