@@ -22,7 +22,7 @@ public class ProductAggregate {
 
     @CommandHandler
     public ProductAggregate(CreateProductCommand command) {
-        validateCreateInventoryItemCommand(command);
+        validateCreateProductCommand(command);
 
         ProductCreatedEvent event = ProductCreatedEvent.builder()
                 .productId(command.getProductId())
@@ -38,7 +38,7 @@ public class ProductAggregate {
         this.name = event.getName();
     }
 
-    private void validateCreateInventoryItemCommand(CreateProductCommand command) {
+    private void validateCreateProductCommand(CreateProductCommand command) {
         if (isNullOrBlank(command.getProductId())) {
             throw new IllegalArgumentException("ProductId cannot be empty");
         }

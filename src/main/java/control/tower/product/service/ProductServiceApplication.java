@@ -27,7 +27,7 @@ public class ProductServiceApplication {
 
 	@Autowired
 	public void configure(EventProcessingConfigurer configurer) {
-		configurer.registerListenerInvocationErrorHandler("inventory-item-group",
+		configurer.registerListenerInvocationErrorHandler("product-group",
 				configuration -> new ProductServiceEventsErrorHandler());
 	}
 }

@@ -30,10 +30,10 @@ public class ProductsQueryController {
     }
 
     private List<ProductRestModel> convertProductEntitiesToProductRestModels(
-            List<ProductEntity> inventoryItemEntities) {
+            List<ProductEntity> productEntities) {
         List<ProductRestModel> productRestModels = new ArrayList<>();
 
-        for (ProductEntity productEntity : inventoryItemEntities) {
+        for (ProductEntity productEntity : productEntities) {
             productRestModels.add(new ProductRestModel(
                     productEntity.getProductId(),
                     productEntity.getName()

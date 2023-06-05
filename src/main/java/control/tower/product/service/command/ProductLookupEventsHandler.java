@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-@ProcessingGroup("inventory-item-group")
+@ProcessingGroup("product-group")
 public class ProductLookupEventsHandler {
 
     private ProductLookupRepository productLookupRepository;
