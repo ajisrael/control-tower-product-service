@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -19,4 +20,5 @@ public class ProductEntity implements Serializable {
     @Column(unique = true)
     private String productId;
     private String name;
+    private BigDecimal price;
 }

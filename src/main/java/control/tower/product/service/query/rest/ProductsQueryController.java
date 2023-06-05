@@ -36,7 +36,8 @@ public class ProductsQueryController {
         for (ProductEntity productEntity : productEntities) {
             productRestModels.add(new ProductRestModel(
                     productEntity.getProductId(),
-                    productEntity.getName()
+                    productEntity.getName(),
+                    productEntity.getPrice()
             ));
         }
 

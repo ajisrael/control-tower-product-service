@@ -9,6 +9,8 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
+import java.math.BigDecimal;
+
 import static control.tower.product.service.core.utils.Helper.isNullOrBlank;
 
 @Aggregate
@@ -19,6 +21,7 @@ public class ProductAggregate {
     @AggregateIdentifier
     private String productId;
     private String name;
+    private BigDecimal price;
 
     @CommandHandler
     public ProductAggregate(CreateProductCommand command) {
@@ -27,6 +30,7 @@ public class ProductAggregate {
         ProductCreatedEvent event = ProductCreatedEvent.builder()
                 .productId(command.getProductId())
                 .name(command.getName())
+                .price(command.getPrice())
                 .build();
 
         AggregateLifecycle.apply(event);
@@ -36,6 +40,7 @@ public class ProductAggregate {
     public void on(ProductCreatedEvent event) {
         this.productId = event.getProductId();
         this.name = event.getName();
+        this.price = event.getPrice();
     }
 
     private void validateCreateProductCommand(CreateProductCommand command) {
@@ -45,6 +50,10 @@ public class ProductAggregate {
 
         if (isNullOrBlank(command.getName())) {
             throw new IllegalArgumentException("Name cannot be empty");
+        }
+
+        if (command.getPrice() == null) {
+            throw new IllegalArgumentException("Price cannot be null");
         }
     }
 }
