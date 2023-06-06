@@ -1,6 +1,6 @@
 package control.tower.product.service.command.interceptors;
 
-import control.tower.product.service.command.CreateProductCommand;
+import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.core.data.ProductLookupEntity;
 import control.tower.product.service.core.data.ProductLookupRepository;
 import org.axonframework.commandhandling.CommandMessage;

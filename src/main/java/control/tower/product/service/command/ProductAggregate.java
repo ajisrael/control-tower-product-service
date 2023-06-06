@@ -1,5 +1,6 @@
 package control.tower.product.service.command;
 
+import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.core.events.ProductCreatedEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,6 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.math.BigDecimal;
 
-import static control.tower.product.service.core.utils.Helper.isNullOrBlank;
-
 @Aggregate
 @NoArgsConstructor
 @Getter
@@ -22,10 +21,11 @@ public class ProductAggregate {
     private String productId;
     private String name;
     private BigDecimal price;
+    private Integer quantity;
 
     @CommandHandler
     public ProductAggregate(CreateProductCommand command) {
-        validateCreateProductCommand(command);
+        command.validate();
 
         ProductCreatedEvent event = ProductCreatedEvent.builder()
                 .productId(command.getProductId())
@@ -41,19 +41,8 @@ public class ProductAggregate {
         this.productId = event.getProductId();
         this.name = event.getName();
         this.price = event.getPrice();
+        this.quantity = 0;
     }
 
-    private void validateCreateProductCommand(CreateProductCommand command) {
-        if (isNullOrBlank(command.getProductId())) {
-            throw new IllegalArgumentException("ProductId cannot be empty");
-        }
-
-        if (isNullOrBlank(command.getName())) {
-            throw new IllegalArgumentException("Name cannot be empty");
-        }
-
-        if (command.getPrice() == null) {
-            throw new IllegalArgumentException("Price cannot be null");
-        }
     }
 }

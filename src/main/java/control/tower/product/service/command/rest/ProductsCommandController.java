@@ -1,6 +1,6 @@
 package control.tower.product.service.command.rest;
 
-import control.tower.product.service.command.CreateProductCommand;
+import control.tower.product.service.command.commands.CreateProductCommand;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,5 +1,6 @@
 package control.tower.product.service.command;
 
+import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.core.events.ProductCreatedEvent;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
