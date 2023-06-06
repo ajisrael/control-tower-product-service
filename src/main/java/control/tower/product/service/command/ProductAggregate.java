@@ -1,7 +1,9 @@
 package control.tower.product.service.command;
 
+import control.tower.core.commands.IncreaseProductStockWithNewInventoryCommand;
 import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.core.events.ProductCreatedEvent;
+import control.tower.product.service.core.events.ProductStockIncreasedWithNewInventoryEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
@@ -36,6 +38,18 @@ public class ProductAggregate {
         AggregateLifecycle.apply(event);
     }
 
+    @CommandHandler
+    public void handle(IncreaseProductStockWithNewInventoryCommand command) {
+        command.validate();
+
+        ProductStockIncreasedWithNewInventoryEvent event = ProductStockIncreasedWithNewInventoryEvent.builder()
+                .productId(command.getProductId())
+                .sku(command.getSku())
+                .build();
+
+        AggregateLifecycle.apply(event);
+    }
+
     @EventHandler
     public void on(ProductCreatedEvent event) {
         this.productId = event.getProductId();
@@ -44,5 +58,8 @@ public class ProductAggregate {
         this.quantity = 0;
     }
 
+    @EventHandler
+    public void on(ProductStockIncreasedWithNewInventoryEvent event) {
+        this.quantity += 1;
     }
 }
