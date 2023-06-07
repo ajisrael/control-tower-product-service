@@ -1,13 +1,16 @@
 package control.tower.product.service.command;
 
-import control.tower.core.commands.IncreaseProductStockWithNewInventoryCommand;
+import control.tower.core.commands.DecreaseProductStockForRemovedInventoryCommand;
+import control.tower.core.commands.IncreaseProductStockForNewInventoryCommand;
 import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.core.events.ProductCreatedEvent;
-import control.tower.product.service.core.events.ProductStockIncreasedWithNewInventoryEvent;
+import control.tower.product.service.core.events.ProductStockDecreasedForRemovedInventoryEvent;
+import control.tower.product.service.core.events.ProductStockIncreasedForNewInventoryEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
@@ -39,10 +42,10 @@ public class ProductAggregate {
     }
 
     @CommandHandler
-    public void handle(IncreaseProductStockWithNewInventoryCommand command) {
+    public void handle(IncreaseProductStockForNewInventoryCommand command) {
         command.validate();
 
-        ProductStockIncreasedWithNewInventoryEvent event = ProductStockIncreasedWithNewInventoryEvent.builder()
+        ProductStockIncreasedForNewInventoryEvent event = ProductStockIncreasedForNewInventoryEvent.builder()
                 .productId(command.getProductId())
                 .sku(command.getSku())
                 .build();
@@ -50,7 +53,19 @@ public class ProductAggregate {
         AggregateLifecycle.apply(event);
     }
 
-    @EventHandler
+    @CommandHandler
+    public void handle(DecreaseProductStockForRemovedInventoryCommand command) {
+        command.validate();
+
+        ProductStockDecreasedForRemovedInventoryEvent event = ProductStockDecreasedForRemovedInventoryEvent.builder()
+                .productId(command.getProductId())
+                .sku(command.getSku())
+                .build();
+
+        AggregateLifecycle.apply(event);
+    }
+
+    @EventSourcingHandler
     public void on(ProductCreatedEvent event) {
         this.productId = event.getProductId();
         this.name = event.getName();
@@ -58,8 +73,13 @@ public class ProductAggregate {
         this.quantity = 0;
     }
 
-    @EventHandler
-    public void on(ProductStockIncreasedWithNewInventoryEvent event) {
+    @EventSourcingHandler
+    public void on(ProductStockIncreasedForNewInventoryEvent event) {
         this.quantity += 1;
+    }
+
+    @EventSourcingHandler
+    public void on(ProductStockDecreasedForRemovedInventoryEvent event) {
+        this.quantity -= 1;
     }
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProductStockIncreasedWithNewInventoryEvent {
+public class ProductStockIncreasedForNewInventoryEvent {
 
     private String productId;
     private String sku;
