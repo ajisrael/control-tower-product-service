@@ -3,7 +3,9 @@ package control.tower.product.service.command;
 import control.tower.core.commands.DecreaseProductStockForRemovedInventoryCommand;
 import control.tower.core.commands.IncreaseProductStockForNewInventoryCommand;
 import control.tower.product.service.command.commands.CreateProductCommand;
+import control.tower.product.service.command.commands.RemoveProductCommand;
 import control.tower.product.service.core.events.ProductCreatedEvent;
+import control.tower.product.service.core.events.ProductRemovedEvent;
 import control.tower.product.service.core.events.ProductStockDecreasedForRemovedInventoryEvent;
 import control.tower.product.service.core.events.ProductStockIncreasedForNewInventoryEvent;
 import lombok.Getter;
@@ -64,6 +66,22 @@ public class ProductAggregate {
         AggregateLifecycle.apply(event);
     }
 
+    @CommandHandler
+    public void handle(RemoveProductCommand command) {
+        command.validate();
+
+        throwErrorIfStockIsGreaterThanZero(stock,
+                String.format("Product %s cannot be removed. %d items in stock.", command.getProductId(), stock));
+
+        ProductRemovedEvent event = ProductRemovedEvent.builder()
+                .productId(command.getProductId())
+                .name(name)
+                .build();
+
+        AggregateLifecycle.apply(event);
+    }
+
+
     @EventSourcingHandler
     public void on(ProductCreatedEvent event) {
         this.productId = event.getProductId();
@@ -80,5 +98,16 @@ public class ProductAggregate {
     @EventSourcingHandler
     public void on(ProductStockDecreasedForRemovedInventoryEvent event) {
         this.stock -= 1;
+    }
+
+    @EventSourcingHandler
+    public void on(ProductRemovedEvent event) {
+        AggregateLifecycle.markDeleted();
+    }
+
+    private void throwErrorIfStockIsGreaterThanZero(Integer stock, String errorMessage) {
+        if (stock > 0) {
+            throw new IllegalStateException(errorMessage);
+        }
     }
 }
