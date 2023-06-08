@@ -9,7 +9,6 @@ import control.tower.product.service.core.events.ProductStockIncreasedForNewInve
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
-import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
@@ -26,7 +25,7 @@ public class ProductAggregate {
     private String productId;
     private String name;
     private BigDecimal price;
-    private Integer quantity;
+    private Integer stock;
 
     @CommandHandler
     public ProductAggregate(CreateProductCommand command) {
@@ -70,16 +69,16 @@ public class ProductAggregate {
         this.productId = event.getProductId();
         this.name = event.getName();
         this.price = event.getPrice();
-        this.quantity = 0;
+        this.stock = 0;
     }
 
     @EventSourcingHandler
     public void on(ProductStockIncreasedForNewInventoryEvent event) {
-        this.quantity += 1;
+        this.stock += 1;
     }
 
     @EventSourcingHandler
     public void on(ProductStockDecreasedForRemovedInventoryEvent event) {
-        this.quantity -= 1;
+        this.stock -= 1;
     }
 }

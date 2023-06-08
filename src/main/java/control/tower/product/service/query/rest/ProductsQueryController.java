@@ -38,7 +38,7 @@ public class ProductsQueryController {
                     productEntity.getProductId(),
                     productEntity.getName(),
                     productEntity.getPrice(),
-                    productEntity.getQuantity()
+                    productEntity.getStock()
             ));
         }
 
