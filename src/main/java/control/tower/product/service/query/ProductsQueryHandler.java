@@ -2,6 +2,7 @@ package control.tower.product.service.query;
 
 import control.tower.product.service.core.data.ProductEntity;
 import control.tower.product.service.core.data.ProductRepository;
+import control.tower.product.service.query.queries.FindAllProductsQuery;
 import lombok.AllArgsConstructor;
 import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;

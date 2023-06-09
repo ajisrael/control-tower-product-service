@@ -1,7 +1,7 @@
 package control.tower.product.service.query.rest;
 
 import control.tower.product.service.core.data.ProductEntity;
-import control.tower.product.service.query.FindAllProductsQuery;
+import control.tower.product.service.query.queries.FindAllProductsQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
