@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
+
+import static control.tower.product.service.core.utils.ProductHasher.createProductHash;
 
 @Component
 public class CreateProductCommandInterceptor implements MessageDispatchInterceptor<CommandMessage<?>> {
@@ -28,9 +31,8 @@ public class CreateProductCommandInterceptor implements MessageDispatchIntercept
             List<? extends CommandMessage<?>> messages) {
         return (index, command) -> {
 
-            LOGGER.info("Intercepted command: " + command.getPayloadType());
-
             if (CreateProductCommand.class.equals(command.getPayloadType())) {
+                LOGGER.info("Intercepted command: " + command.getPayloadType());
 
                 CreateProductCommand createProductCommand = (CreateProductCommand) command.getPayload();
 
@@ -42,6 +44,12 @@ public class CreateProductCommandInterceptor implements MessageDispatchIntercept
                             String.format("Product with id %s already exists",
                                     createProductCommand.getProductId())
                     );
+                }
+
+                productLookupEntity = productLookupRepository.findByProductHash(createProductHash(createProductCommand));
+
+                if (productLookupEntity != null) {
+                    throw new IllegalStateException("Product already configured in catalog");
                 }
             }
 

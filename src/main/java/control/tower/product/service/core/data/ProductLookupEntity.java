@@ -22,4 +22,6 @@ public class ProductLookupEntity implements Serializable {
     @Id
     @Column(unique = true)
     private String productId;
+    @Column(unique = true)
+    private String productHash;
 }

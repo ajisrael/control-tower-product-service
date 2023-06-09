@@ -11,6 +11,7 @@ import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
 
 import static control.tower.core.utils.Helper.throwErrorIfEntityDoesNotExist;
+import static control.tower.product.service.core.utils.ProductHasher.createProductHash;
 
 @Component
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class ProductLookupEventsHandler {
 
     @EventHandler
     public void on(ProductCreatedEvent event) {
-        productLookupRepository.save(new ProductLookupEntity(event.getProductId()));
+        productLookupRepository.save(new ProductLookupEntity(event.getProductId(), createProductHash(event)));
     }
 
     @EventHandler
