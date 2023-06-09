@@ -2,6 +2,7 @@ package control.tower.product.service.query.rest;
 
 import control.tower.product.service.core.data.ProductEntity;
 import control.tower.product.service.query.queries.FindAllProductsQuery;
+import control.tower.product.service.query.queries.FindProductQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,18 @@ public class ProductsQueryController {
 
     @GetMapping
     public List<ProductRestModel> getProducts() {
-        FindAllProductsQuery findAllProductsQuery = new FindAllProductsQuery();
-
-        List<ProductEntity> productEntities = queryGateway.query(findAllProductsQuery,
+        List<ProductEntity> productEntities = queryGateway.query(new FindAllProductsQuery(),
                 ResponseTypes.multipleInstancesOf(ProductEntity.class)).join();
 
         return convertProductEntitiesToProductRestModels(productEntities);
+    }
+
+    @GetMapping(params = "productId")
+    public ProductRestModel getProduct(String productId) {
+        ProductEntity productEntity = queryGateway.query(new FindProductQuery(productId),
+                ResponseTypes.instanceOf(ProductEntity.class)).join();
+
+        return convertProductEntityToProductRestModel(productEntity);
     }
 
     private List<ProductRestModel> convertProductEntitiesToProductRestModels(
@@ -34,14 +41,18 @@ public class ProductsQueryController {
         List<ProductRestModel> productRestModels = new ArrayList<>();
 
         for (ProductEntity productEntity : productEntities) {
-            productRestModels.add(new ProductRestModel(
-                    productEntity.getProductId(),
-                    productEntity.getName(),
-                    productEntity.getPrice(),
-                    productEntity.getStock()
-            ));
+            productRestModels.add(convertProductEntityToProductRestModel(productEntity));
         }
 
         return productRestModels;
+    }
+
+    private ProductRestModel convertProductEntityToProductRestModel(ProductEntity productEntity) {
+        return new ProductRestModel(
+                productEntity.getProductId(),
+                productEntity.getName(),
+                productEntity.getPrice(),
+                productEntity.getStock()
+        );
     }
 }
