@@ -9,7 +9,6 @@ import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -24,9 +23,7 @@ public class ProductsQueryHandler {
 
     @QueryHandler
     public ProductEntity findProduct(FindProductQuery query) {
-        Optional<ProductEntity> productEntityOptional = productRepository.findById(query.getProductId());
-
-        return productEntityOptional.orElseThrow(
+        return productRepository.findById(query.getProductId()).orElseThrow(
                 () -> new IllegalStateException(String.format("Product %s does not exist", query.getProductId())));
     }
 }
