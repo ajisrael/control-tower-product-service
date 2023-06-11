@@ -14,7 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import static control.tower.core.utils.Helper.throwErrorIfEntityDoesNotExist;
+import static control.tower.core.utils.Helper.throwExceptionIfEntityDoesNotExist;
+import static control.tower.product.service.core.constants.ExceptionMessages.FAILED_TO_DECREMENT_PRODUCT_STOCK_CANNOT_BE_NEGATIVE;
+import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_WITH_ID_DOES_NOT_EXIST;
+import static control.tower.product.service.core.utils.Helper.throwExceptionIfStockIsGreaterThanZero;
+import static control.tower.product.service.core.utils.Helper.throwExceptionIfStockIsLessThanOrEqualToZero;
 
 @Component
 @ProcessingGroup("product-group")
@@ -50,8 +54,8 @@ public class ProductEventsHandler {
     public void on(ProductStockIncreasedForNewInventoryEvent event) {
         ProductEntity productEntity = productRepository.findByProductId(event.getProductId());
 
-        throwErrorIfEntityDoesNotExist(productEntity,
-                String.format("Product [%s] does not exist.", event.getProductId()));
+        throwExceptionIfEntityDoesNotExist(productEntity,
+                String.format(PRODUCT_WITH_ID_DOES_NOT_EXIST, event.getProductId()));
 
         productEntity.setStock(productEntity.getStock() + 1);
         productRepository.save(productEntity);
@@ -61,9 +65,10 @@ public class ProductEventsHandler {
     public void on(ProductStockDecreasedForRemovedInventoryEvent event) {
         ProductEntity productEntity = productRepository.findByProductId(event.getProductId());
 
-        throwErrorIfEntityDoesNotExist(productEntity,
-                String.format("Product [%s] does not exist.", event.getProductId()));
-        throwErrorIfStockIsLessThanOrEqualToZero(productEntity);
+        throwExceptionIfEntityDoesNotExist(productEntity,
+                String.format(PRODUCT_WITH_ID_DOES_NOT_EXIST, event.getProductId()));
+
+        throwExceptionIfStockIsLessThanOrEqualToZero(productEntity.getStock(), productEntity.getProductId());
 
         productEntity.setStock(productEntity.getStock() - 1);
         productRepository.save(productEntity);
@@ -73,15 +78,11 @@ public class ProductEventsHandler {
     public void on(ProductRemovedEvent event) {
         ProductEntity productEntity = productRepository.findByProductId(event.getProductId());
 
-        throwErrorIfEntityDoesNotExist(productEntity,
-                String.format("Product [%s] does not exist.", event.getProductId()));
+        throwExceptionIfEntityDoesNotExist(productEntity,
+                String.format(PRODUCT_WITH_ID_DOES_NOT_EXIST, event.getProductId()));
+
+        throwExceptionIfStockIsGreaterThanZero(productEntity.getStock(), productEntity.getProductId());
 
         productRepository.delete(productEntity);
-    }
-
-    private void throwErrorIfStockIsLessThanOrEqualToZero(ProductEntity productEntity) {
-        if (productEntity.getStock() <= 0) {
-            throw new IllegalStateException(String.format("Failed to decrement product [%s] product stock cannot be negative"));
-        }
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_WITH_ID_DOES_NOT_EXIST;
+
 @Component
 @AllArgsConstructor
 public class ProductsQueryHandler {
@@ -24,6 +26,6 @@ public class ProductsQueryHandler {
     @QueryHandler
     public ProductEntity findProduct(FindProductQuery query) {
         return productRepository.findById(query.getProductId()).orElseThrow(
-                () -> new IllegalStateException(String.format("Product %s does not exist", query.getProductId())));
+                () -> new IllegalStateException(String.format(PRODUCT_WITH_ID_DOES_NOT_EXIST, query.getProductId())));
     }
 }

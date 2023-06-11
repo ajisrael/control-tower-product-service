@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
+import static control.tower.core.constants.LogMessages.INTERCEPTED_COMMAND;
+import static control.tower.core.utils.Helper.throwExceptionIfEntityDoesExist;
+import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_ALREADY_CONFIGURED_IN_CATALOG;
+import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_WITH_ID_ALREADY_EXISTS;
 import static control.tower.product.service.core.utils.ProductHasher.createProductHash;
 
 @Component
@@ -32,28 +36,28 @@ public class CreateProductCommandInterceptor implements MessageDispatchIntercept
         return (index, command) -> {
 
             if (CreateProductCommand.class.equals(command.getPayloadType())) {
-                LOGGER.info("Intercepted command: " + command.getPayloadType());
+                LOGGER.info(String.format(INTERCEPTED_COMMAND, command.getPayloadType()));
 
                 CreateProductCommand createProductCommand = (CreateProductCommand) command.getPayload();
 
                 ProductLookupEntity productLookupEntity = productLookupRepository.findByProductId(
                         createProductCommand.getProductId());
 
-                if (productLookupEntity != null) {
-                    throw new IllegalStateException(
-                            String.format("Product with id %s already exists",
-                                    createProductCommand.getProductId())
-                    );
-                }
+                throwExceptionIfEntityDoesExist(productLookupEntity,
+                        String.format(PRODUCT_WITH_ID_ALREADY_EXISTS, createProductCommand.getProductId()));
 
                 productLookupEntity = productLookupRepository.findByProductHash(createProductHash(createProductCommand));
 
-                if (productLookupEntity != null) {
-                    throw new IllegalStateException("Product already configured in catalog");
-                }
+                throwExceptionIfProductIsAlreadyInCatalog(productLookupEntity);
             }
 
             return command;
         };
+    }
+
+    private void throwExceptionIfProductIsAlreadyInCatalog(ProductLookupEntity productLookupEntity) {
+        if (productLookupEntity != null) {
+            throw new IllegalStateException(PRODUCT_ALREADY_CONFIGURED_IN_CATALOG);
+        }
     }
 }

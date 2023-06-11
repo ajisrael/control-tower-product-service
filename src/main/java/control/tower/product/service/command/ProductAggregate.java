@@ -18,6 +18,11 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.math.BigDecimal;
 
+import static control.tower.product.service.core.constants.ExceptionMessages.FAILED_TO_DECREMENT_PRODUCT_STOCK_CANNOT_BE_NEGATIVE;
+import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_WITH_ID_CANNOT_BE_REMOVED_WHILE_ITEMS_IN_STOCK;
+import static control.tower.product.service.core.utils.Helper.throwExceptionIfStockIsGreaterThanZero;
+import static control.tower.product.service.core.utils.Helper.throwExceptionIfStockIsLessThanOrEqualToZero;
+
 @Aggregate
 @NoArgsConstructor
 @Getter
@@ -58,6 +63,8 @@ public class ProductAggregate {
     public void handle(DecreaseProductStockForRemovedInventoryCommand command) {
         command.validate();
 
+        throwExceptionIfStockIsLessThanOrEqualToZero(this.stock, command.getProductId());
+
         ProductStockDecreasedForRemovedInventoryEvent event = ProductStockDecreasedForRemovedInventoryEvent.builder()
                 .productId(command.getProductId())
                 .sku(command.getSku())
@@ -70,8 +77,7 @@ public class ProductAggregate {
     public void handle(RemoveProductCommand command) {
         command.validate();
 
-        throwErrorIfStockIsGreaterThanZero(stock,
-                String.format("Product %s cannot be removed. %d items in stock.", command.getProductId(), stock));
+        throwExceptionIfStockIsGreaterThanZero(this.stock, command.getProductId());
 
         ProductRemovedEvent event = ProductRemovedEvent.builder()
                 .productId(command.getProductId())
@@ -103,11 +109,5 @@ public class ProductAggregate {
     @EventSourcingHandler
     public void on(ProductRemovedEvent event) {
         AggregateLifecycle.markDeleted();
-    }
-
-    private void throwErrorIfStockIsGreaterThanZero(Integer stock, String errorMessage) {
-        if (stock > 0) {
-            throw new IllegalStateException(errorMessage);
-        }
     }
 }

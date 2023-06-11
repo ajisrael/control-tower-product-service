@@ -4,7 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
-import static control.tower.core.utils.Helper.isNullOrBlank;
+import static control.tower.core.utils.Helper.throwExceptionIfParameterIsEmpty;
+import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_ID_CANNOT_BE_EMPTY;
 
 @Getter
 @Builder
@@ -14,8 +15,7 @@ public class RemoveProductCommand {
     private String productId;
 
     public void validate() {
-        if (isNullOrBlank(productId)) {
-            throw new IllegalArgumentException("ProductId cannot be empty");
-        }
+        throwExceptionIfParameterIsEmpty(this.getProductId(), PRODUCT_ID_CANNOT_BE_EMPTY);
+
     }
 }
