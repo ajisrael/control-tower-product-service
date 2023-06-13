@@ -18,8 +18,6 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.math.BigDecimal;
 
-import static control.tower.product.service.core.constants.ExceptionMessages.FAILED_TO_DECREMENT_PRODUCT_STOCK_CANNOT_BE_NEGATIVE;
-import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_WITH_ID_CANNOT_BE_REMOVED_WHILE_ITEMS_IN_STOCK;
 import static control.tower.product.service.core.utils.Helper.throwExceptionIfStockIsGreaterThanZero;
 import static control.tower.product.service.core.utils.Helper.throwExceptionIfStockIsLessThanOrEqualToZero;
 
@@ -36,8 +34,6 @@ public class ProductAggregate {
 
     @CommandHandler
     public ProductAggregate(CreateProductCommand command) {
-        command.validate();
-
         ProductCreatedEvent event = ProductCreatedEvent.builder()
                 .productId(command.getProductId())
                 .name(command.getName())
@@ -49,7 +45,7 @@ public class ProductAggregate {
 
     @CommandHandler
     public void handle(IncreaseProductStockForNewInventoryCommand command) {
-        command.validate();
+        command.validate(); // command called from external service needs to be validated in aggregate
 
         ProductStockIncreasedForNewInventoryEvent event = ProductStockIncreasedForNewInventoryEvent.builder()
                 .productId(command.getProductId())
@@ -61,7 +57,7 @@ public class ProductAggregate {
 
     @CommandHandler
     public void handle(DecreaseProductStockForRemovedInventoryCommand command) {
-        command.validate();
+        command.validate(); // command called from external service needs to be validated in aggregate
 
         throwExceptionIfStockIsLessThanOrEqualToZero(this.stock, command.getProductId());
 
@@ -75,8 +71,6 @@ public class ProductAggregate {
 
     @CommandHandler
     public void handle(RemoveProductCommand command) {
-        command.validate();
-
         throwExceptionIfStockIsGreaterThanZero(this.stock, command.getProductId());
 
         ProductRemovedEvent event = ProductRemovedEvent.builder()

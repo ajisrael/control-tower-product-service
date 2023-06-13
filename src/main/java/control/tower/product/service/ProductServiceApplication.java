@@ -2,6 +2,7 @@ package control.tower.product.service;
 
 import control.tower.core.config.XStreamConfig;
 import control.tower.product.service.command.interceptors.CreateProductCommandInterceptor;
+import control.tower.product.service.command.interceptors.RemoveProductCommandInterceptor;
 import control.tower.product.service.core.errorhandling.ProductServiceEventsErrorHandler;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.config.EventProcessingConfigurer;
@@ -22,9 +23,12 @@ public class ProductServiceApplication {
 	}
 
 	@Autowired
-	public void registerCreateProductCommandInterceptor(ApplicationContext context, CommandBus commandBus) {
+	public void registerCommandInterceptors(ApplicationContext context, CommandBus commandBus) {
 		commandBus.registerDispatchInterceptor(
 				context.getBean(CreateProductCommandInterceptor.class)
+		);
+		commandBus.registerDispatchInterceptor(
+				context.getBean(RemoveProductCommandInterceptor.class)
 		);
 	}
 

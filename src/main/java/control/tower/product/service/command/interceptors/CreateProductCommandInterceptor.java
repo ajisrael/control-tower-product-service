@@ -40,6 +40,8 @@ public class CreateProductCommandInterceptor implements MessageDispatchIntercept
 
                 CreateProductCommand createProductCommand = (CreateProductCommand) command.getPayload();
 
+                createProductCommand.validate();
+
                 ProductLookupEntity productLookupEntity = productLookupRepository.findByProductId(
                         createProductCommand.getProductId());
 
