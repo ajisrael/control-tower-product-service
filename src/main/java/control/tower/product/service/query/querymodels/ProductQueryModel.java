@@ -1,4 +1,4 @@
-package control.tower.product.service.query.rest;
+package control.tower.product.service.query.querymodels;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor
-public class ProductRestModel {
+public class ProductQueryModel {
 
     private String productId;
     private String name;

@@ -4,10 +4,12 @@ import control.tower.product.service.core.data.ProductEntity;
 import control.tower.product.service.core.data.ProductRepository;
 import control.tower.product.service.query.queries.FindAllProductsQuery;
 import control.tower.product.service.query.queries.FindProductQuery;
+import control.tower.product.service.query.querymodels.ProductQueryModel;
 import lombok.AllArgsConstructor;
 import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static control.tower.product.service.core.constants.ExceptionMessages.PRODUCT_WITH_ID_DOES_NOT_EXIST;
@@ -19,13 +21,35 @@ public class ProductsQueryHandler {
     private final ProductRepository productRepository;
 
     @QueryHandler
-    public List<ProductEntity> findAllProducts(FindAllProductsQuery query) {
-        return productRepository.findAll();
+    public List<ProductQueryModel> findAllProducts(FindAllProductsQuery query) {
+        List<ProductEntity> productEntities = productRepository.findAll();
+        return convertProductEntitiesToProductQueryModels(productEntities);
     }
 
     @QueryHandler
-    public ProductEntity findProduct(FindProductQuery query) {
-        return productRepository.findById(query.getProductId()).orElseThrow(
+    public ProductQueryModel findProduct(FindProductQuery query) {
+        ProductEntity productEntity = productRepository.findById(query.getProductId()).orElseThrow(
                 () -> new IllegalStateException(String.format(PRODUCT_WITH_ID_DOES_NOT_EXIST, query.getProductId())));
+        return convertProductEntityToProductQueryModel(productEntity);
+    }
+
+    private List<ProductQueryModel> convertProductEntitiesToProductQueryModels(
+            List<ProductEntity> productEntities) {
+        List<ProductQueryModel> productQueryModels = new ArrayList<>();
+
+        for (ProductEntity productEntity : productEntities) {
+            productQueryModels.add(convertProductEntityToProductQueryModel(productEntity));
+        }
+
+        return productQueryModels;
+    }
+
+    private ProductQueryModel convertProductEntityToProductQueryModel(ProductEntity productEntity) {
+        return new ProductQueryModel(
+                productEntity.getProductId(),
+                productEntity.getName(),
+                productEntity.getPrice(),
+                productEntity.getStock()
+        );
     }
 }
