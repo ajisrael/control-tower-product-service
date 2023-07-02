@@ -1,4 +1,4 @@
-package control.tower.product.service.command.rest;
+package control.tower.product.service.command.rest.requests;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

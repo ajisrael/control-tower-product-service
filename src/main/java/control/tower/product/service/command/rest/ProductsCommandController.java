@@ -2,6 +2,8 @@ package control.tower.product.service.command.rest;
 
 import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.command.commands.RemoveProductCommand;
+import control.tower.product.service.command.rest.requests.CreateProductRequestModel;
+import control.tower.product.service.command.rest.requests.RemoveProductRequestModel;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
