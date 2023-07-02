@@ -4,6 +4,7 @@ import control.tower.product.service.command.commands.CreateProductCommand;
 import control.tower.product.service.command.commands.RemoveProductCommand;
 import control.tower.product.service.command.rest.requests.CreateProductRequestModel;
 import control.tower.product.service.command.rest.requests.RemoveProductRequestModel;
+import control.tower.product.service.command.rest.responses.ProductCreatedResponseModel;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,23 +24,25 @@ public class ProductsCommandController {
     private CommandGateway commandGateway;
 
     @PostMapping
-    public String createProduct(@Valid @RequestBody CreateProductRequestModel createProductRequestModel) {
+    public ProductCreatedResponseModel createProduct(@Valid @RequestBody CreateProductRequestModel createProductRequestModel) {
         CreateProductCommand createProductCommand = CreateProductCommand.builder()
                 .productId(UUID.randomUUID().toString())
                 .name(createProductRequestModel.getName())
                 .price(createProductRequestModel.getPrice())
                 .build();
 
-        return commandGateway.sendAndWait(createProductCommand);
+        String productId = commandGateway.sendAndWait(createProductCommand);
+
+        return ProductCreatedResponseModel.builder().productId(productId).build();
     }
 
     @DeleteMapping
-    public String removeProduct(@Valid @RequestBody RemoveProductRequestModel removeProductRequestModel) {
+    public void removeProduct(@Valid @RequestBody RemoveProductRequestModel removeProductRequestModel) {
         RemoveProductCommand removeProductCommand = RemoveProductCommand.builder()
                 .productId(removeProductRequestModel.getProductId())
                 .build();
 
-        return commandGateway.sendAndWait(removeProductCommand);
+        commandGateway.sendAndWait(removeProductCommand);
     }
 }
 
