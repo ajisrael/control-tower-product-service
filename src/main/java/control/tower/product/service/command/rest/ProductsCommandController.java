@@ -40,6 +40,9 @@ public class ProductsCommandController {
     }
 
     @DeleteMapping
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Remove product")
     public void removeProduct(@Valid @RequestBody RemoveProductRequestModel removeProductRequestModel) {
         RemoveProductCommand removeProductCommand = RemoveProductCommand.builder()
                 .productId(removeProductRequestModel.getProductId())
