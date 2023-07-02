@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Getter
 @NoArgsConstructor
-public class CreateProductRestModel {
+public class CreateProductRequestModel {
 
     @NotBlank(message = "Name is a required field")
     private String name;

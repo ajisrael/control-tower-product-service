@@ -21,20 +21,20 @@ public class ProductsCommandController {
     private CommandGateway commandGateway;
 
     @PostMapping
-    public String createProduct(@Valid @RequestBody CreateProductRestModel createProductRestModel) {
+    public String createProduct(@Valid @RequestBody CreateProductRequestModel createProductRequestModel) {
         CreateProductCommand createProductCommand = CreateProductCommand.builder()
                 .productId(UUID.randomUUID().toString())
-                .name(createProductRestModel.getName())
-                .price(createProductRestModel.getPrice())
+                .name(createProductRequestModel.getName())
+                .price(createProductRequestModel.getPrice())
                 .build();
 
         return commandGateway.sendAndWait(createProductCommand);
     }
 
     @DeleteMapping
-    public String removeProduct(@Valid @RequestBody RemoveProductRestModel removeProductRestModel) {
+    public String removeProduct(@Valid @RequestBody RemoveProductRequestModel removeProductRequestModel) {
         RemoveProductCommand removeProductCommand = RemoveProductCommand.builder()
-                .productId(removeProductRestModel.getProductId())
+                .productId(removeProductRequestModel.getProductId())
                 .build();
 
         return commandGateway.sendAndWait(removeProductCommand);

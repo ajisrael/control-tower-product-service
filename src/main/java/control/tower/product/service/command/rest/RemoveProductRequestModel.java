@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
-public class RemoveProductRestModel {
+public class RemoveProductRequestModel {
 
     @NotBlank(message = "ProductId is a required field")
     private String productId;
