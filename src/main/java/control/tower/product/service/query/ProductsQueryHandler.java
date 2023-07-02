@@ -8,6 +8,7 @@ import control.tower.product.service.query.queries.FindProductQuery;
 import control.tower.product.service.query.querymodels.ProductQueryModel;
 import lombok.AllArgsConstructor;
 import org.axonframework.queryhandling.QueryHandler;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,9 +25,9 @@ public class ProductsQueryHandler {
     private final ProductRepository productRepository;
 
     @QueryHandler
-    public List<ProductQueryModel> findAllProducts(FindAllProductsQuery query) {
-        List<ProductEntity> productEntities = productRepository.findAll();
-        return convertProductEntitiesToProductQueryModels(productEntities);
+    public Page<ProductQueryModel> findAllProducts(FindAllProductsQuery query) {
+        return productRepository.findAll(query.getPageable())
+                .map(this::convertProductEntityToProductQueryModel);
     }
 
     @QueryHandler
@@ -45,17 +46,6 @@ public class ProductsQueryHandler {
                 .collect(Collectors.toList());
 
         return new HashSet<>(productIds).containsAll(query.getProductIds());
-    }
-
-    private List<ProductQueryModel> convertProductEntitiesToProductQueryModels(
-            List<ProductEntity> productEntities) {
-        List<ProductQueryModel> productQueryModels = new ArrayList<>();
-
-        for (ProductEntity productEntity : productEntities) {
-            productQueryModels.add(convertProductEntityToProductQueryModel(productEntity));
-        }
-
-        return productQueryModels;
     }
 
     private ProductQueryModel convertProductEntityToProductQueryModel(ProductEntity productEntity) {
